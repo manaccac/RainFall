@@ -1,0 +1,24 @@
+ls -la
+level0
+./level0
+Segmentation fault (core dumped)
+./level0 vgbuhin
+No !
+
+ltrace ./level0
+marche pas
+
+gbd ./level0
+
+quand on fait disas main on voit 
+on peut voir un atoi ensuite un cmp eax $0x1a7
+si on tape $0x1a7 sur internet on trouve 
+7 x 1 = 7
+A x 16 = 160
+1 x 16 x 16 = 256
+
+7 + 160 + 256 = 423
+si on fait ./level 423 
+ca marche plus ca faire
+cat /home/user/level1/.pass
+1fe8a524fa4bec01ca4ea2a869af2a02260d4a7d5fe7e7c24d8617e6dca12d3a
