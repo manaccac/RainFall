@@ -1,0 +1,29 @@
+bon bon bon on a un ./level2
+ls -la
+./level2
+
+./level2
+(il attend quelque chose)
+si j'ecrit wqe
+il revoit wqe
+puis stop
+
+gdb ./level2
+info function
+
+on voit 
+0x080484d4  p
+0x0804853f  main
+
+disas main:
+   0x08048545 <+6>:     call   0x80484d4 <p>
+disas p:
+(106 ligne let's go)
+
+on voit un 
+0x080484ed <+25>:    call   0x80483c0 <gets@plt>
+on va break avent pour voir le eax qu'il use
+
+break *0x080484ed
+(gdb) x/s $eax
+0xbffff75c:      "\001"
