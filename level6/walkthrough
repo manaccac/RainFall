@@ -19,6 +19,7 @@ bon j'ai trouver qu'on pouvais appeler la fonction n en sortant des "limite" de 
 
 du coup j'ai regarder une video qui nous aide beaucoup a comprendre les malloc
 https://www.youtube.com/watch?v=HPDBOhiKaD8&list=PLhixgUqwRTjxglIswKp9mpkfPNfHkzyeN&index=27
+https://www.youtube.com/watch?v=TfJrU95q1J4&list=PLhixgUqwRTjxglIswKp9mpkfPNfHkzyeN&index=27
 
 donc on a malloc de 64
 0x08048485 <+9>:     movl   $0x40,(%esp)
