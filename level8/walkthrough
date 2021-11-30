@@ -1,0 +1,16 @@
+quand on lance le ex il prend des valeurs mais dans tous les cas il ecrit 
+(nil), (nil) 
+donc je vais regarder le gdb
+il n'y a qu'un main pas de function
+
+bon y a quand meme 468 ligne 
+
+des le debut on a deux ligne qui nous frappe
+0x08048575 <+17>:    mov    0x8049ab0,%ecx
+0x0804857b <+23>:    mov    0x8049aac,%edx
+
+on voit que c variable son respectivement service et auth
+(gdb) x/s 0x8049ab0
+0x8049ab0 <service>:     ""
+(gdb) x/s 0x8049aac
+0x8049aac <auth>:        ""
