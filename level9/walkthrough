@@ -1,0 +1,19 @@
+un ex qui ne renvoit rien
+un buffer de 108
+0x08048610 <+28>:    movl   $0x6c,(%esp)
+
+ca fait tres bizarre le reste du disas main
+
+il y a plein de zn alors je sais pas ce que c on va regarder
+enfaite je comprend pas on va pas chercher ca pour le moment on voit qu'il n'y a pas de system donc il faut utiliser le shellcode
+
+ok j'ai a peut pret comprit que les deux "variable"
+
+on sait aussi que 
+   0x08048677 <+131>:   call   0x804870e <_ZN1N13setAnnotationEPc>
+et la fonction avec le memcpy
+
+on peut choper l'adress du buffer de eax apres la function on break *0x0804867c
+et on 
+(gdb) x $eax
+0x804a00c:      0x00000061
