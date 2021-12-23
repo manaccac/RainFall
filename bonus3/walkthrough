@@ -1,0 +1,23 @@
+je vais tester de faire juste la technique pour envoyer le shellcode
+enfaite j'ai juste fait un ltrace et je vois qu'il utilise un open du coup pas possible
+je vais regarder le code
+on voit ca il faut pas etre un geni pour comprendre si on lui envoit un arg vide mais un arg il fait le bin/sh
+    if (iVar2 == 0) {
+      execl("/bin/sh","sh",0);
+    }
+
+donc on va juste tester ca ""
+
+bon ba merci ghidra tu carry
+bonus3@RainFall:~$ ./bonus3 ""
+$ cat /home/user/bonus4/.pass   
+cat: /home/user/bonus4/.pass: No such file or directory
+$ whoami
+end
+$ cat /home/user/end/.pass     
+
+end@RainFall:~$ cat end 
+Congratulations graduate!                    
+
+GG a tous
+hesitez pas a follow mon git :)

