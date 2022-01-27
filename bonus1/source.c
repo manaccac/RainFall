@@ -1,20 +1,15 @@
-undefined4 main(undefined4 param_1,int param_2)
-
-{
-  undefined4 uVar1;
-  undefined local_3c [40];
-  int local_14;
+int main(int argc, char** argv) {
+  int nb;
+  char str[40];
   
-  local_14 = atoi(*(char **)(param_2 + 4));
-  if (local_14 < 10) {
-    memcpy(local_3c,*(void **)(param_2 + 8),local_14 * 4);
-    if (local_14 == 0x574f4c46) {
-      execl("/bin/sh","sh",0);
-    }
-    uVar1 = 0;
+  nb = atoi(argv[1]);
+  if (nb <= 9) {
+    memcpy(str, argv[2], nb * 4);
+    if (nb == 0x574f4c46) {
+			execl("/bin/sh", "sh", 0);
+		}
+  } else {
+    return (1);
   }
-  else {
-    uVar1 = 1;
-  }
-  return uVar1;
+  return (0);
 }
